@@ -58,7 +58,13 @@ index_document(Index, Type, Id,  Document) ->
     elastic_http:index(connection(), #{index => index(Index), type => Type, id => Id, document => Document}).
 
 
--spec bulk_index_documents(index(), iolist(), list()) -> {ok, map()} | {error, binary()}.
+-spec bulk_index_documents({list(), index()}|index(), iolist(), list()) -> {ok, map()} | {error, binary()}.
+bulk_index_documents({IndexPrefix, IndexType}, Type, Documents) ->
+    elastic_http:bulk_index(connection(),
+                            #{index => [IndexPrefix, "-",
+                                       postfix(IndexType, erlang:universaltime())],
+                                       type => Type,
+                                       documents => Documents});
 bulk_index_documents(Index, Type, Documents) ->
     elastic_http:bulk_index(connection(), #{index => index(Index),
                                        type => Type,
